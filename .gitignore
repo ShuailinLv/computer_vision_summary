@@ -7,6 +7,5 @@
 *.gz
 *.toc
 *.zip
-.SETUP/*
 *.CPX
 *.synctex
