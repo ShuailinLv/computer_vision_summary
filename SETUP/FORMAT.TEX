@@ -1,0 +1,325 @@
+%================================主文档 格式定义===================
+\addtolength{\headsep}{-0.1cm}        %页眉位置
+%\addtolength{\footskip}{0.4cm}       %页脚位置
+\allowdisplaybreaks[4]                         %  \eqnarray如果很长，影响分栏、换行和分页，% 可以设置成为自动调整模式
+%===========================================================================
+%下面这组命令使浮动对象的缺省值稍微宽松一点，也可以防止在很大空白的浮动页上放置很小的图形。
+%===========================================================================
+\renewcommand{\textfraction}{0.15}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.65}
+\renewcommand{\floatpagefraction}{0.60}
+%===========================================================================
+%下面这组命令可以使公式编号随着每开始新的一节而重新开始。
+%===========================================================================
+%\makeatletter      % '@' is now a normail "letter" for TeX
+%\@addtoreset{eqation}{section}
+%\makeatother       % '@' is restored as a "non-letter" character for TeX
+%--------------------------------------------------------------------------------------------------
+\newcommand{\song}{\CJKfamily{song}}    % 宋体   (Windows自带simsun.ttf)
+\newcommand{\fs}{\CJKfamily{fs}}               % 仿宋体 (Windows自带simfs.ttf)
+\newcommand{\kai}{\CJKfamily{kai}}           % 楷体   (Windows自带simkai.ttf)
+\newcommand{\hei}{\CJKfamily{hei}}          % 黑体   (Windows自带simhei.ttf)
+\newcommand{\li}{\CJKfamily{li}}                 % 隶书   (Windows自带simli.ttf)
+%------------------------------------------------------------------------------------------------------
+\newcommand{\linghao}{\fontsize{48pt}{60pt}\selectfont}      % 零号, 1.4倍行距
+\newcommand{\chuhao}{\fontsize{42pt}{\baselineskip}\selectfont}  % 初号& 42pt
+\newcommand{\xiaochuhao}{\fontsize{36pt}{\baselineskip}\selectfont} % 小初号& 36pt
+\newcommand{\yihao}{\fontsize{28pt}{38pt}\selectfont}        % 一号, 1.4倍行距
+\newcommand{\erhao}{\fontsize{21pt}{28pt}\selectfont}        % 二号, 1.25倍行距
+\newcommand{\xiaoer}{\fontsize{18pt}{18pt}\selectfont}       % 小二, 单倍行距
+\newcommand{\sanhao}{\fontsize{16pt}{24pt}\selectfont}       % 三号, 1.5倍行距
+\newcommand{\xiaosan}{\fontsize{15pt}{22pt}\selectfont}      % 小三, 1.5倍行距
+\newcommand{\sihao}{\fontsize{14pt}{21pt}\selectfont}        % 四号, 1.5倍行距
+\newcommand{\xiaosihao}{\fontsize{12pt}{18pt}\selectfont}    % 小四, 1.5倍行距
+\newcommand{\dawuhao}{\fontsize{11pt}{11pt}\selectfont}      % 大五号, 单倍行距
+\newcommand{\wuhao}{\fontsize{10.5pt}{10.5pt}\selectfont}    % 五号, 单倍行距
+\newcommand{\xiaowuhao}{\fontsize{10pt}{10pt}\selectfont}    % 小五号, 单倍行距
+\newcommand{\liuhao}{\fontsize{7.875pt}{7.875pt}\selectfont} % 六号, 单倍行距
+\newcommand{\qihao}{\fontsize{5.25pt}{\baselineskip}\selectfont}
+%--------------------------------------------------------------------------------------------------------
+\newcommand{\zhijia}{\vphantom{\bigg|}} % 行内公式用的垂直支架
+\newcommand{\zhijiaa}{\vphantom{\Bigg|}} % 行内公式用的垂直支架
+%=========定义颜色===================================
+\definecolor{blueblack}{cmyk}{0,0,0,0.35}%浅黑
+\definecolor{darkblue}{cmyk}{1,0,0,0}%纯蓝
+\definecolor{lightblue}{cmyk}{0.15,0,0,0}%浅蓝
+
+%-----------重定义带编号标题----------------------------
+\theoremstyle{plain}
+\theoremheaderfont{\hei\rmfamily}
+\theorembodyfont{\song\rmfamily}
+\theoremseparator{~}%帽号 : 改为 ~ 变空格
+\newtheorem{definition}{\indent\color{white}HOT100}[chapter]
+\newtheorem{proposition}{\indent\color{darkblue} 命题}[chapter]
+\newtheorem{theorem}{\indent\color{darkblue}定理}[chapter]
+\newtheorem{lemma}{\indent\color{darkblue}引理}[chapter]
+\newtheorem{axiom}{\indent\color{darkblue}公理}[chapter]
+\newtheorem{corollary}{\indent\color{darkblue}推论}[chapter]
+\newtheorem{character}{\indent\color{darkblue}性质}[chapter]
+%\newtheorem{exercise}{\indent\hei 习题}
+
+\newtheorem{exam}{\indent\hei \color{darkblue} 例}[chapter]
+\newtheorem{example}{\hspace{2em}\hei\color{white}Hot100}[chapter]
+\newcommand{\program}[1]{\noindent\parbox{10.6cm}{\includegraphics[width=2.8cm]{fig/sjwt.jpg}
+\vspace{-1.10cm}\example\textcolor{darkblue}{\hei#1}}\vspace{0.0cm}}  %实际问题标志
+
+%------------------------------------------重定义不带编号标题----------------------------
+\theoremstyle{nonumberplain} \theoremseparator{~}    %帽号 : 改为 ~ 变空格
+%\theoremsymbol{$\blacksquare$}                      %在证明结束行尾加上一个黑色方块
+\newtheorem{proof}{\indent\hei \textcolor{darkblue}{证明}}
+\newtheorem{Solution}{\indent\hei \textcolor{darkblue}{解}}
+
+%==========程序框====================================
+\newcommand{\programbox}[2]{
+\begin{tcolorbox}[colback=white,colframe=darkblue,title=\example #1]
+ #2
+\end{tcolorbox}}
+%==========程序框结束====================================
+
+%==========命题框====================================
+\newcommand{\propositionbox}[1]{\vspace{0.3cm}
+\begin{colorboxed}[boxcolor=darkblue,bgcolor=white]
+\vspace{-0.3cm}\proposition #1
+\end{colorboxed}}
+%==========命题框结束====================================
+
+%==========引理框====================================
+\newcommand{\lemmabox}[1]{\vspace{0.3cm}
+\begin{colorboxed}[boxcolor=darkblue,bgcolor=white]
+\vspace{-0.3cm}\lemma #1
+\end{colorboxed}}
+%==========引理框结束====================================
+
+%==========定理框====================================
+\newcommand{\theorebox}[1]{\vspace{0.3cm}
+\begin{colorboxed}[boxcolor=darkblue,bgcolor=lightblue]
+\vspace{-0.3cm}\theorem #1
+\end{colorboxed}}
+%==========定理框结束====================================
+
+%==========推论框====================================
+\newcommand{\corolbox}[1]{\vspace{0.3cm}
+\begin{colorboxed}[boxcolor=darkblue,bgcolor=white]
+\vspace{-0.3cm}\corollary #1
+\end{colorboxed}}
+%==========推论框结束====================================
+
+%==========性质框====================================
+\newcommand{\charactbox}[1]{\vspace{0.3cm}
+\begin{colorboxed}[boxcolor=darkblue,bgcolor=white]
+\vspace{-0.3cm}\character #1
+\end{colorboxed}}
+%==========性质框结束====================================
+
+%==========定义框====================================
+\newcommand{\definibox}[2]{\vspace{0.3cm}
+\begin{colorboxed}[boxcolor=darkblue,fgcolor=white,bgcolor=darkblue]
+\vspace{-0.2cm}
+\definition\hei\color{white}#1
+\vspace{0.04cm}
+\end{colorboxed}
+\vspace{-0.7cm} \setlength{\fboxsep}{4pt}
+\begin{colorboxed}[boxcolor=darkblue,fgcolor=black,bgcolor=lightblue]
+#2
+\end{colorboxed}\color{black}}
+%==========定义框结束====================================
+
+%===========================用于中文段落缩进和正文版式======================
+\CJKcaption{setup/gb_452}
+\newlength \CJKtwospaces
+\def\CJKindent{\settowidth\CJKtwospaces{\CJKchar{"0A1}{"0A1}\CJKchar{"0A1}{"0A1}}\parindent\CJKtwospaces}
+\CJKtilde \CJKindent
+\setlength{\parindent}{1.7em}    %首行缩进2个汉字
+%===========================定义段落章节的标题和目录项的格式======================
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+%\renewcommand\contentsname{目~~~~录}
+\renewcommand\chaptername{\CJKprechaptername\CJKthechapter\CJKchaptername}
+\titleformat{\chapter}[hang]{\filcenter\hei\sf\color{darkblue}}{\erhao{\color{darkblue}\chaptertitlename}}{20pt}{\erhao}
+\titlespacing{\chapter}{0pt}{50pt}{40pt}                                          % 标题左边距，上文距，下文距
+\titleformat{\section}[hang]{\filcenter \hei \sf \sihao\color{darkblue}}{\sihao\color{darkblue}\S\ \thesection}{0.5em}{}{}
+\titlespacing{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}         % 标题左边距，上文距，下文距
+\titleformat{\subsection}[hang]{\hei \sf \xiaosihao\color{darkblue}}{\xiaosihao \color{darkblue}\thesubsection}{0.5em}{}{}
+\titlespacing*{\subsection} {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}   % 标题左边距，上文距，下文距
+\titleformat{\subsubsection}[hang]{\hei \sf\color{darkblue}}{\color{darkblue}\thesubsubsection }{0.5em}{}{}
+\titlespacing{\subsubsection}{0pt}{0.25em}{0pt}
+%去掉中间对齐的sectionformat，这样就把节的标题左对齐了。
+%\renewcommand \sectionformat{}
+
+
+\dottedcontents{chapter}[0em]{\addvspace{1.5em}\hei\color{darkblue}}{4em}{5pt}
+%\dottedcontents{chapter}[4em]{\addvspace{1.5em}\hei\color{black}}{4em}{5pt}
+\dottedcontents{section}[3.9em]{\addvspace{0.0em}}{2em}{5pt}
+\dottedcontents{subsection}[7em]{\addvspace{0.0em}}{3em}{5pt}
+
+
+%\titlecontents{chapter}[0em]{\hei\color{darkblue}}{\contentslabel{0em}}{\hspace*{0em}}{\dotfill \contentspage}% 定义章标题蓝色
+
+\makeatletter\let\ps@plain\ps@empty\makeatother      %下面善三行去掉了目录首页页码
+
+%===========================================================================
+% 定义页眉和页脚 使用fancyhdr 宏包
+%===========================================================================
+
+%-------定义页眉下单隔线----------------
+
+\renewcommand{\headrule}{{\color{darkblue}\hrule width\headwidth height\headrulewidth \vskip-\headrulewidth}}
+%\newcommand{\makeheadrule}{\makebox[0pt][l]{\color{darkblue}\rule[.7\baselineskip]{\headwidth}{0.3pt}}\vskip-.8\baselineskip}
+
+%-------定义页眉下双隔线----------------
+%\newcommand{\makeheadrule}{%
+%    \makebox[0pt][l]{\color{darkblue}\rule[.7\baselineskip]{\headwidth}{0.3pt}}%0.4
+%    \color{darkblue}\rule[0.85\baselineskip]{\headwidth}{1.5pt}\vskip-.8\baselineskip}%1.5 0.4->0.5
+%\renewcommand{\headrule}{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi\makeheadrule}}
+
+
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername\quad #1}{}}    %去掉章标题中的数字
+\renewcommand{\sectionmark}[1]{\markright{\thesection\quad #1}{}}    %去掉节标题中的点
+\fancyhf{} %清空页眉
+%\lhead{\resizebox{70pt}{!}{\includegraphics{fig/renmindaxue.png}}}   %页眉插图
+%\rhead{\resizebox{70pt}{!}{\includegraphics{fig/renmindaxue.png}}}   %页眉插图
+
+%在 book文件类别下,\leftmark自动存录各章之章名,\rightmark记录节标题
+%\fancyhead[RO]{\kai{\wuhao.~\color{darkblue}\thepage~.}\hspace{-2em}}         % 奇数页码显示左边
+%\fancyhead[LE]{\hspace{-2em}\kai{\wuhao.~\color{darkblue}\thepage~.}}         % 偶数页码显示右边
+
+\fancyhead[RO]{\kai{\wuhao.~\color{darkblue}\thepage~.}}         % 奇数页码显示左边
+\fancyhead[LE]{\kai{\wuhao.~\color{darkblue}\thepage~.}}         % 偶数页码显示右边
+\fancyhead[CO]{\song\footnotesize\color{darkblue}\rightmark} % 奇数页码中间显示节标题
+\fancyhead[CE]{\song\footnotesize\color{darkblue}\leftmark}  % 偶数页码中间显示章标题
+
+%\fancyhead[CO]{\mbox{~~~~}\hfill\makebox{\CJKfamily{song}\wuhao\rightmark}\hfill\mbox{\wuhao.~\thepage~.}}
+%\fancyhead[CE]{\mbox{\wuhao.~\thepage~.}\hfill\makebox{\CJKfamily{song}\wuhao\leftmark}\hfill\mbox{~~~~}}
+
+% 页码在版芯下边线之下隔行居中放置；
+%\fancyfoot[C,C]{\wuhao--~\thepage~--}
+
+%==========================设置行距和段落间垂直距离===============
+\setlength{\parskip}{3pt plus1pt minus1pt}      % 段落之间的竖直距离
+\renewcommand{\baselinestretch}{1.25}           % 定义行距
+
+%========================调整列表环境的垂直间距==============
+\makeatletter
+\let\orig@Itemize =\itemize
+\let\orig@Enumerate =\enumerate
+\let\orig@Description =\description
+\def\Myspacing{\itemsep=1.5ex \topsep=-0.5ex \partopsep=0pt \parskip=0pt \parsep=0.5ex}
+\def\newitemsep{
+\renewenvironment{itemize}{\orig@Itemize\Myspacing}{\endlist}
+\renewenvironment{enumerate}{\orig@Enumerate\Myspacing}{\endlist}
+\renewenvironment{description}{\orig@Description\Myspacing}{\endlist}
+}
+\def\olditemsep{
+\renewenvironment{itemize}{\orig@Itemize}{\endlist}
+\renewenvironment{enumerate}{\orig@Enumerate}{\endlist}
+\renewenvironment{description}{\orig@Description}{\endlist}
+}
+\newitemsep
+
+%=========================调整公式与正文间距========================
+\renewcommand\normalsize{%
+   \@setfontsize\normalsize\@xpt\@xiipt
+   \abovedisplayskip 5\p@ \@plus3\p@ \@minus5\p@
+   \abovedisplayshortskip \z@ \@plus3\p@
+   \belowdisplayshortskip 5\p@ \@plus3\p@ \@minus3\p@
+   \belowdisplayskip\abovedisplayskip
+   \let\@listi\@listI}
+
+\setlength\jot{10pt}  %多行公式内部间距
+\renewcommand{\arraystretch}{1.2}   %表格内行间距
+
+%\setlength\abovedisplayskip{0pt}
+%\setlength\belowdisplayskip{0pt}
+%renewcommand{\arraystretch}{1.5}
+
+%\abovedisplayskip=12pt plus 3pt minus 9pt
+%\abovedisplayshortskip=0pt plus 3pt
+%\belowdisplayskip=12pt plus 3pt minus 9pt
+%\belowdisplayshortskip=7pt plus 3pt minus 4pt
+
+%\setlength{\mathindent}{4.7 em}     %左对齐公式缩进量
+
+
+%===========================调整表格标题与正文及表格间距==================
+\setlength{\abovecaptionskip}{0.1cm}
+\setlength{\belowcaptionskip}{0.1cm}
+
+%=========================================================
+% 修改引用的格式，
+%=========================================================
+%第一行在引用处数字两边加方框
+%第二行去除参考文献里数字两边的方框
+%\makeatletter
+%\def\@cite#1{\mbox{$\m@th^{\hbox{\@ove@rcfont[#1]}}$}}
+%\renewcommand\@biblabel[1]{#1}
+%\makeatother
+
+% 增加 \ucite 命令使显示的引用为上标形式
+\newcommand{\ucite}[1]{$^{\mbox{\scriptsize \cite{#1}}}$}
+
+%=======================定制浮动图形和表格标题样式=================
+\renewcommand{\captionfont}{\CJKfamily{song}\rmfamily}
+\renewcommand{\captionlabelfont}{\CJKfamily{song}\rmfamily}
+
+%=========================================================
+\renewcommand{\captionlabeldelim}{\hspace{1em}}                  %  去掉图表号后面的:
+\renewcommand{\captionfont}{\footnotesize}          %  图表标题字体为10pt, 这里写作小五号
+
+%=======================定义题头格言的格式======================
+%
+% 用法 \begin{Aphorism}{author}
+%         aphorism
+%      \end{Aphorism}
+
+\newsavebox{\AphorismAuthor}
+\newenvironment{Aphorism}[1]
+{\vspace{0.5cm}\begin{sloppypar} \slshape
+\sbox{\AphorismAuthor}{#1}
+\begin{quote}\small\itshape }
+{\\ \hspace*{\fill}------\hspace{0.2cm} \usebox{\AphorismAuthor}
+\end{quote}
+\end{sloppypar}\vspace{0.5cm}}
+
+%=========================================================================
+% 自定义项目列表标签及格式 \begin{denselist} 列表项 \end{denselist}
+%=========================================================================
+\newcounter{newlist} %自定义新计数器
+\newenvironment{denselist}[1][可改变的列表题目]{%%%%%定义新环境
+\begin{list}{\textbf{\hei #1} \arabic{newlist}：} %%标签格式
+    {
+     \usecounter{newlist}
+     \setlength{\labelwidth}{22pt} %标签盒子宽度
+     \setlength{\labelsep}{0cm} %标签与列表文本距离
+     \setlength{\leftmargin}{0cm} %左右边界
+     \setlength{\rightmargin}{0cm}
+     \setlength{\parsep}{0ex} %段落间距
+     \setlength{\itemsep}{0ex} %标签间距
+     \setlength{\itemindent}{44pt} %标签缩进量
+     \setlength{\listparindent}{22pt} %段落缩进量
+    }}
+{\end{list}}
+\def\defaultfont{\renewcommand{\baselinestretch}{1.5}
+\fontsize{12pt}{13pt}\selectfont}
+
+%============================= 封面============================
+\makeatletter
+\def\cftitle#1{\def\@cftitle{#1}}\def\@cftitle{}
+\def\ctitle#1{\def\@ctitle{#1}}\def\@ctitle{}
+\def\cauthor#1{\def\@cauthor{#1}}\def\@cauthor{}
+\def\publisher#1{\def\@publisher{#1}}\def\@publisher{}
+
+\def\makecover{
+    \begin{titlepage}
+    \begin{center}
+    \parbox[t][2cm][c]{\textwidth}{\begin{center} {\@cftitle}\end{center} }
+    \parbox[t][0cm][c]{\textwidth}{\begin{center} {\linghao\hei\@ctitle}\end{center} }
+    \parbox[t][4.0cm][c]{\textwidth}{\begin{center} {\sanhao\@cauthor}\end{center} }
+    \parbox[t][10cm][b]{\textwidth}{\begin{center} {\sanhao\@publisher} \end{center} }
+    \end{center}
+    \end{titlepage}
+    \normalsize
+   }
+\makeatother
+

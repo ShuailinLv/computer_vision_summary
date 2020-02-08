@@ -1,0 +1,31 @@
+\documentclass[12pt,a4paper,openany,twoside]{book}
+\input{setup/package.tex}   %引用宏包所在位置
+\begin{document}
+\begin{CJK*}{GBK}{song}
+\input{setup/format.tex}    %格式所在位置
+\pagenumbering{Roman}   %Roman字体书写页码
+%-----------------------------------------------------------------------------
+\input{preface/cover}                                           %封面
+%\include{preface/intro}                                         %简介
+\include{preface/intro2}                                       %序
+%\include{preface/preface2}                                   %二版前言
+%\include{preface/preface}                                     %前言
+%---------------------------------------目录部分---------------------------------
+
+\setcounter{page}{1}                                            %重新开始页码
+\tableofcontents
+%\addtocontents{toc}{\protect\begin{multicols}{2}}       %目录分两栏开始
+\mainmatter    %前言和目录页码结束，正文重新开始设置页码
+%-----------------------------------------正文开始---------------------------------
+\include{book/chap1}       %第一章
+%\include{book/chap2}       %第二章
+
+%\include{book/chap1}       %第一章
+%\include{book/chap2}       %第二章
+
+%-----------------------------------------正文结束--------------------------------
+%\include{book/answer}                                            %习题答案
+
+\clearpage
+\end{CJK*}
+\end{document}
