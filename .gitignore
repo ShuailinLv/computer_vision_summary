@@ -1,9 +1,3 @@
-.BOOK/*
-.APPENDIX/
-.BOOK*synctex/
-.PREFACE/
-.reference/
-*.TEX
 *.gz
 *.thm
 *.aux
@@ -15,9 +9,5 @@
 *.zip
 *.CPX
 .SETUP/*
-*.TEX
-*.jpg
 *.CPX
-*.tex 
-.SETUP/*
-.FIG/*
+*.synctex
