@@ -56,5 +56,23 @@
 %\usepackage{natbib}
 \usepackage{listings}
 \lstset{language=C++}%这条命令可以让LaTeX排版时将C++键字突出显示
-\lstset{breaklines}%这条命令可以让LaTeX自动将长的代码行换行排版
+\lstset{breaklines=true}%这条命令可以让LaTeX自动将长的代码行换行排版
 \lstset{extendedchars=false}%这一条命令可以解决代码跨页时，章节标题，页眉等汉字不显示的问题
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{
+backgroundcolor=\color{white},   % choose the background color
+basicstyle=\footnotesize, % size of fonts used for the code或改成\small\monaco稍大
+numbers=left,                        % 设置行号
+numberstyle=\tiny,            % 设置行号字体大小
+columns=fullflexible,
+breaklines=true,                 % automatic line breaking only at whitespace
+captionpos=b,                    % sets the caption-position to bottom
+tabsize=4,                       % 把tab扩展为4个空格，默认是8个太长
+%commentstyle=\color{mygreen},     设置注释颜色
+keywordstyle=\color{blue},       % 设置keyword颜色
+frame=single,                        % 设置有边框
+language=c++,
+}

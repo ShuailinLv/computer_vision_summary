@@ -8,3 +8,5 @@
 *.toc
 *.zip
 *.synctex
+*.bbl
+*.blg 

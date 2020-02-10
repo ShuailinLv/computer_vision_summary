@@ -21,7 +21,7 @@
 %\end{tcolorbox}}
 %\setlength{\fboxrule}{1pt}\setlength{\fboxsep}{4pt}
 
-\section{两数之和}
+\section{两数之和 unordered\_map}
 \definibox{问题描述}{
 \noindent 给定一个整数数组\textbf{nums} 和一个目标值\textbf{target}, 请你在该数组中找出和为目标值的那两个整数, 并返回他们的数组下标. 你可以假设每种输入只会对应一个答案. 但是, 你不能重复利用这个数组中同样的元素.\\
 示例: 给定 nums = [2, 7, 11, 15], target = 9; 因为 nums[0] + nums[1] = 2 + 7 = 9;
@@ -34,7 +34,9 @@
 
 哈希表是通过key关键字直接访问对应value值的数据结构. 特点是键和值一一对应, 查找时间复杂度\textbf{O(1)}.
 
-{\color{red}{\emph{unordered\_map example code}}}
+Example\_1: unordered\_map插入, 迭代遍历.
+
+{\color{red}{\emph{unordered\_map example\_1 code}}}
 \begin{lstlisting}
 #include <iostream>
 #include <unordered_map>
@@ -42,25 +44,77 @@
 using namespace std;
 int main()
 {
-	unordered_map<int, string> myMap = { { 5, "王五" },{ 6, "赵六" } };//使用{}赋值
-	myMap[2] = "李二";  //使用[ ]进行单个插入，若已存在键值2，则赋值修改，若无则插入。
-	myMap.insert(pair<int, string>(3, "张三"));//使用insert和pair插入
-	myMap[1] = "陈一";
-	//遍历输出	
-	auto iter = myMap.begin();
-	while (iter != myMap.end()) {
-		cout << iter->first << "," << iter->second << endl;
-		++iter;
-	}
+	unordered_map<string, double> umap;
+	umap["PI"] = 3.14;
+	umap.insert(make_pair("a", 2.1));
 
-	//查找元素并输出
-	auto iterator = myMap.find(2);//find()返回一个指向2的迭代器
-	if (iterator != myMap.end())
-		cout << endl << iterator->first << "," << iterator->second << endl;
+	// find in umap
+	string key = "PI";
+	if (umap.find(key) == umap.end())
+		cout << "cannot find PI" << endl;
+	else
+		cout << "find " << umap.find(key)->first << " = " << umap.find(key)->second << endl;
+
+	// iterator of umap
+	cout << "entire unorded_map is:"<<endl;
+	unordered_map<string, double>::iterator itr;
+	for (itr = umap.begin(); itr != umap.end(); ++itr)
+		cout << "(" << itr->first << "," << itr->second << ")" << endl;
 	system("pause");
 	return 0;
 }
 \end{lstlisting}
+\noindent 
+\fbox{%
+  \parbox{0.3\textwidth}{
+\textbf{output}:\\
+find PI = 3\\
+all elements are:\\
+(PI,3.14)\\
+(a,2.1)  
+}}
+
+
+Example\_2: 利用unordered\_map输出一段文字中重复单词的个数
+
+{\color{red}{\emph{unordered\_map example\_2 code}}}
+\begin{lstlisting}
+#include <iostream>
+#include <unordered_map>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+void printWordFreq(const string& str)
+{
+	unordered_map<string, int> wordFreq;
+	string word;
+	stringstream  ss(str);
+	while (ss >> word)
+		wordFreq[word]++;
+
+	cout << "all elements are:" << endl;
+	for (auto u : wordFreq)
+		cout << "(" << u.first << "," << u.second << ")" << endl;
+}
+
+int main()
+{
+	string str = "studies very very hard";
+	printWordFreq(str);
+	return 0;
+}
+\end{lstlisting}
+\noindent
+\fbox{%
+  \parbox{0.3\textwidth}{
+\textbf{output}:\\
+all elements are:\\
+(studies, 1)\\
+(very, 2)\\
+(hard, 1)
+}}
 
 \subsection{解题代码}
 \begin{lstlisting}
@@ -94,3 +148,126 @@ int main()
     return 0;
 }
 \end{lstlisting}
+
+
+
+\section{两数相加 linked list}
+\definibox{问题描述}{
+\noindent 给出两个非空的链表用来表示两个非负的整数. 其中, 它们各自的位数是按照逆序的方式存储的, 并且它们的每个节点只能存储一位数字. 如果, 我们将这两个数相加起来, 则会返回一个新的链表来表示它们的和.
+
+\noindent 您可以假设除了数字0之外, 这两个数都不会以0开头.
+
+\noindent 示例: 输入 (2 $->$ 4 $->$ 3) + (5 $->$ 6 $->$ 4), 输出: 7 $->$ 0 $->$ 8, 原因: $342 + 465 = 807$
+
+\noindent \url{https://leetcode-cn.com/problems/add-two-numbers}
+}
+
+\subsection{解题思路}
+这里用c++ 链表来解决
+
+Example\_1: 创建链表并初始化
+
+{\color{red}{\emph{linked list example\_1 code}}}
+\begin{lstlisting}
+#include <iostream>
+
+using namespace std;
+
+class Node{
+public:
+	int data;
+	Node* next;
+};
+
+int main()
+{
+	Node* head = nullptr;
+	Node* second = nullptr;
+	Node* third = nullptr;
+
+	head = new Node();
+	head->data = 1;
+
+	second = new Node();
+	second->data = 2;
+
+	third = new Node();
+	third->data = 3;
+
+	cout << head->data << " " << second->data << " " << third->data << endl;
+
+	delete head;
+	delete second;
+	delete third;
+	return 0;
+}
+\end{lstlisting}
+\noindent
+\fbox{%
+  \parbox{0.3\textwidth}{
+\textbf{output}:\\
+1 2 3
+}}
+
+
+Example\_2: 打印链表中的所有元素
+
+{\color{red}{\emph{linked list example\_2 code}}}
+\begin{lstlisting}
+#include <iostream>
+
+using namespace std;
+
+class Node{
+public:
+	int data;
+	Node* next;
+};
+
+void PrintLinkedList(Node* head)
+{
+	Node* temp = head;
+	while (temp != nullptr) {
+		cout << temp->data << " ";
+		temp = temp->next;
+	}
+	cout << endl;
+}
+
+int main()
+{
+	Node* head = nullptr;
+	Node* second = nullptr;
+	Node* third = nullptr;
+
+	head = new Node();
+	second = new Node();
+	third = new Node();
+
+	head->data = 1;
+	head->next = second;
+	
+	second->data = 2;
+	second->next = third;
+	
+	third->data = 3;
+	third->next = nullptr;
+
+
+	PrintLinkedList(head);
+
+	delete head;
+	delete second;
+	delete third;
+	return 0;
+}
+\end{lstlisting}
+\noindent
+\fbox{%
+  \parbox{0.3\textwidth}{
+\textbf{output}:\\
+1 2 3
+}}
+
+\subsection{解题代码}
+
