@@ -269,5 +269,61 @@ int main()
 1 2 3
 }}
 
+Example\_3: 链表插入节点
+
+{\color{red}{\emph{linked list example\_3 code}}}
+\begin{lstlisting}
+#include <iostream>
+
+using namespace std;
+
+class Node{
+public:
+	int data;
+	Node* next;
+};
+
+// 在链表前面插入节点
+void InsertBeforeHead(Node** head_ref, int newData)
+{
+}
+
+// 在节点后面插入节点
+void InsertAfterANode(Node** prev_node, int newData)
+{
+
+}
+
+// 在尾节点后插入节点
+void InsertAtEnd(Node** head_ref, int newData)
+{
+
+}
+
+// 打印链表
+void PrintLinkedList(Node* head)
+{
+	Node* temp = head;
+	while (temp != nullptr) {
+		cout << temp->data << " ";
+		temp = temp->next;
+	}
+	cout << endl;
+}
+int main()
+{
+	Node* head = nullptr;
+	InsertBeforeHead(&head, 7);
+
+	return 0;
+}
+\end{lstlisting}
+\noindent
+\fbox{%
+  \parbox{0.3\textwidth}{
+\textbf{output}:\\
+None
+}}
+
 \subsection{解题代码}
 
