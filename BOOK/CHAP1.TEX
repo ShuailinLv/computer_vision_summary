@@ -284,20 +284,44 @@ public:
 };
 
 // 在链表前面插入节点
-void InsertBeforeHead(Node** head_ref, int newData)
+void push(Node** head_ref, int newData)
 {
+	Node* newNode = new Node();
+	newNode->data = newData;
+	newNode->next = (*head_ref);
+	(*head_ref) = newNode;
 }
 
 // 在节点后面插入节点
-void InsertAfterANode(Node** prev_node, int newData)
+void insertAfter(Node** prev_node, int newData)
 {
+	if ((*prev_node) == nullptr) {
+		cout << "the previous node cannot be nullptr" << endl;
+		return;
+	}
 
+	Node* newNode = new Node();
+	newNode->data = newData;
+	newNode->next = (*prev_node)->next;
+	(*prev_node)->next = newNode;
 }
 
 // 在尾节点后插入节点
-void InsertAtEnd(Node** head_ref, int newData)
+void append(Node** head_ref, int newData)
 {
+	Node* newNode = new Node();
+	newNode->data = newData;
+	newNode->next = nullptr;
+	if ((*head_ref) == nullptr) {
+		(*head_ref) = newNode;
+		return;
+	}
 
+	Node* move = (*head_ref);
+	while (move->next != nullptr) {
+		move = move->next;
+	}
+	move->next = newNode;
 }
 
 // 打印链表
@@ -310,11 +334,35 @@ void PrintLinkedList(Node* head)
 	}
 	cout << endl;
 }
+
+void destroyLinkedList(Node** head_ref) {
+	Node* move = (*head_ref);
+	Node* next = nullptr;
+	while (move != nullptr) {
+		next = move->next;
+		delete move;
+		move = next;
+	}
+	(*head_ref) = nullptr;
+}
+
 int main()
 {
 	Node* head = nullptr;
-	InsertBeforeHead(&head, 7);
+	
+	append(&head, 6);
 
+	push(&head, 7);
+
+	push(&head, 1);
+
+	append(&head, 4);
+
+	insertAfter(&(head->next), 8);
+
+	cout << "linked list is: ";
+	PrintLinkedList(head);
+	destroyLinkedList(&head);
 	return 0;
 }
 \end{lstlisting}
@@ -322,8 +370,108 @@ int main()
 \fbox{%
   \parbox{0.3\textwidth}{
 \textbf{output}:\\
-None
+linked list is: 1 7 8 6 4
 }}
 
+
 \subsection{解题代码}
+\begin{lstlisting}
+null
+\end{lstlisting}
+
+
+
+
+
+
+\section{无重复字符的最长子串 (double pointer algorithm, set)}
+\definibox{问题描述}{
+\noindent 给定一个字符串, 请你找出其中不含有重复字符的最长子串的长度.
+
+\noindent \textbf{示例1}:
+
+\noindent 输入: ``abcabcb"
+
+\noindent 输出: 3
+
+\noindent 解释: 因为无重复字符的最长子串是 ``abc", 所以其长度为 3.
+
+\noindent \textbf{示例 2}:
+
+\noindent 输入: ``bbbbb"
+
+\noindent 输出: 1
+
+\noindent 解释: 因为无重复字符的最长子串是 ``b", 所以其长度为 1.
+
+\noindent \textbf{示例 3}:
+
+\noindent 输入: ``pwwkew"
+
+\noindent 输出: 3
+
+\noindent 解释: 因为无重复字符的最长子串是``wke", 所以其长度为3. 请注意, 你的答案必须是子串的长度, ``pwke"是一个子序列, 不是子串.
+
+\noindent \url{https://leetcode-cn.com/problems/longest-substring-without-repeating-characters}
+}
+
+\subsection{解题思路}
+
+\url{https://cloud.tencent.com/developer/article/1377650}
+
+这道题主要用到思路是: 滑动窗口
+
+什么是滑动窗口?
+
+其实就是一个队列, 比如例题中的abcabcbb, 进入这个队列(窗口)为abc满足题目要求, 当再进入a, 队列变成了abca, 这时候不满足要求. 所以, 我们要移动这个队列!
+
+如何移动?
+
+我们只要把队列的左边的元素移出就行了, 直到满足题目要求!
+
+一直维持这样的队列, 找出队列出现最长的长度时候, 求出解!
+
+时间复杂度: \textbf{O(n)}
+
+
+
+\subsection{解题代码}
+\begin{lstlisting}
+#include <iostream>
+#include <string>
+#include <unordered_set>
+#include <algorithm> // max, min
+
+using namespace std;
+
+int lengthOfLongestSubstring(string s) {
+	if (s.size() == 0) return 0;
+	unordered_set<char> lookup;
+	int maxStr = 0;
+	int left = 0;
+	for (int i = 0; i < s.size(); i++) {
+		while (lookup.find(s[i]) != lookup.end()) {
+			lookup.erase(s[left]);
+			left++;
+		}
+		maxStr = max(maxStr, i - left + 1);
+		lookup.insert(s[i]);
+	}
+	return maxStr;
+}
+
+int main()
+{
+	string str = "abcabcb";
+	cout << lengthOfLongestSubstring(str) << endl;
+	return 0;
+}
+\end{lstlisting}
+\noindent
+\fbox{%
+  \parbox{0.3\textwidth}{
+\textbf{output}:\\
+3
+}}
+
 
