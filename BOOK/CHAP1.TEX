@@ -21,7 +21,7 @@
 %\end{tcolorbox}}
 %\setlength{\fboxrule}{1pt}\setlength{\fboxsep}{4pt}
 
-\section{两数之和 unordered\_map}
+\section{两数之和}
 \definibox{问题描述}{
 \noindent 给定一个整数数组\textbf{nums} 和一个目标值\textbf{target}, 请你在该数组中找出和为目标值的那两个整数, 并返回他们的数组下标. 你可以假设每种输入只会对应一个答案. 但是, 你不能重复利用这个数组中同样的元素.\\
 示例: 给定 nums = [2, 7, 11, 15], target = 9; 因为 nums[0] + nums[1] = 2 + 7 = 9;
@@ -29,8 +29,10 @@
 \noindent 所以返回 [0, 1]
 
 \noindent \url{https://leetcode-cn.com/problems/two-sum}}
-\subsection{解题思路}
-这里用c++的unordered\_map来解决, unordered\_map内部是一个关联容器, 采用hash 表结构, 有快速检索的功能.
+
+\subsection{知识点 unordered\_map}
+
+unordered\_map内部是一个关联容器, 采用hash 表结构, 有快速检索的功能.
 
 哈希表是通过key关键字直接访问对应value值的数据结构. 特点是键和值一一对应, 查找时间复杂度\textbf{O(1)}.
 
@@ -116,6 +118,7 @@ all elements are:\\
 (hard, 1)
 }}
 
+
 \subsection{解题代码}
 \begin{lstlisting}
 #include <iostream>
@@ -162,7 +165,7 @@ int main()
 \noindent \url{https://leetcode-cn.com/problems/add-two-numbers}
 }
 
-\subsection{解题思路}
+\subsection{知识点 linked list}
 这里用c++ 链表来解决
 
 Example\_1: 创建链表并初始化
@@ -487,7 +490,7 @@ int main()
 
 
 
-\section{无重复字符的最长子串 (double pointer algorithm, set)}
+\section{无重复字符的最长子串}
 \definibox{问题描述}{
 \noindent 给定一个字符串, 请你找出其中不含有重复字符的最长子串的长度.
 
@@ -518,6 +521,9 @@ int main()
 \noindent \url{https://leetcode-cn.com/problems/longest-substring-without-repeating-characters}
 }
 
+\subsection{知识点  double pointer algorithm和unordered\_set}
+c++提供两种关联型数据结构, 1) 树型结构, 如: map, set; 2) hash结构, 如: unordered\_map, unordered\_set. map和set是有序的, 其他两个是无序的.
+
 \subsection{解题思路}
 
 \url{https://cloud.tencent.com/developer/article/1377650}
@@ -535,7 +541,6 @@ int main()
 一直维持这样的队列, 找出队列出现最长的长度时候, 求出解!
 
 时间复杂度: \textbf{O(n)}
-
 
 
 \subsection{解题代码}
@@ -610,6 +615,32 @@ int main()
 
 \subsection{解题思路}
 
+
+这道题让我们求两个有序数组的中位数，而且限制了时间复杂度为O(log (m+n))，看到这个时间复杂度，
+自然而然的想到了应该使用二分查找法来求解。那么回顾一下中位数的定义，如果某个有序数组长度是奇数，
+那么其中位数就是最中间那个，如果是偶数，那么就是最中间两个数字的平均值。这里对于两个有序数组也是一样的，
+假设两个有序数组的长度分别为m和n，由于两个数组长度之和 m+n 的奇偶不确定，因此需要分情况来讨论，
+对于奇数的情况，直接找到最中间的数即可，偶数的话需要求最中间两个数的平均值。为了简化代码，不分情况讨论，
+我们使用一个小trick，我们分别找第 (m+n+1) / 2 个，和 (m+n+2) / 2 个，然后求其平均值即可，这对奇偶数均适用。
+假如 m+n 为奇数的话，那么其实 (m+n+1) / 2 和 (m+n+2) / 2 的值相等，相当于两个相同的数字相加再除以2，还是其本身。
+
+这里我们需要定义一个函数来在两个有序数组中找到第K个元素，下面重点来看如何实现找到第K个元素。
+首先，为了避免产生新的数组从而增加时间复杂度，我们使用两个变量i和j分别来标记数组nums1和nums2的起始位置。
+然后来处理一些边界问题，比如当某一个数组的起始位置大于等于其数组长度时，说明其所有数字均已经被淘汰了，相当于一个空数组了，
+那么实际上就变成了在另一个数组中找数字，直接就可以找出来了。还有就是如果K=1的话，那么我们只要比较nums1和nums2的起始位置i和j上的数字就可以了。
+难点就在于一般的情况怎么处理？因为我们需要在两个有序数组中找到第K个元素，为了加快搜索的速度，我们要使用二分法，对K二分，
+意思是我们需要分别在nums1和nums2中查找第K/2个元素，注意这里由于两个数组的长度不定，所以有可能某个数组没有第K/2个数字，所以我们需要先检查一下，
+数组中到底存不存在第K/2个数字，如果存在就取出来，否则就赋值上一个整型最大值。如果某个数组没有第K/2个数字，那么我们就淘汰另一个数字的前K/2个数字即可。
+有没有可能两个数组都不存在第K/2个数字呢，这道题里是不可能的，因为我们的K不是任意给的，而是给的m+n的中间值，所以必定至少会有一个数组是存在第K/2个数字的。
+最后就是二分法的核心啦，比较这两个数组的第K/2小的数字midVal1和midVal2的大小，如果第一个数组的第K/2个数字小的话，那么说明我们要找的数字肯定不在nums1中
+的前K/2个数字，所以我们可以将其淘汰，将nums1的起始位置向后移动K/2个，并且此时的K也自减去K/2，调用递归。反之，我们淘汰nums2中的前K/2个数字，
+并将nums2的起始位置向后移动K/2个，并且此时的K也自减去K/2，调用递归即可。
+
+
+
+
+
+
 用二分查找算法, 也叫做折半查找算法.
 
 
@@ -618,7 +649,7 @@ Example\_1: 二分查找
 
 {\color{red}{\emph{二分查找算法 example\_1 code}}}
 \begin{lstlisting}
-// 二分查找|折半查找
+// 二分查找 - 折半查找
 int search(int arr[], int key, int left, int  right)
 {
 	while (left <= right)
@@ -662,4 +693,42 @@ int main()
 \textbf{output}:\\
 \noindent left: 0, right: 3\\
 found the value, the index is: 2
+}}
+
+\subsection{解题代码}
+
+\begin{lstlisting}
+/*分清 起始位置 和 第几个元素 */
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int findKthNumber(vector<int>& nums1, int i, vector<int>& nums2, int j, int k) {
+	if (i >= nums1.size())   return nums2[j + k - 1];
+	if (j >= nums2.size())   return nums1[i + k - 1];
+	//if(k ==1) return (double(nums1[i] + nums2[j]));wrong
+	if (k == 1) return min(nums1[i], nums2[j]);
+	//查找有没有k/2个元素的位置     i + k/2 -1
+	int midVal1 = (i + k / 2 - 1 < nums1.size()) ? nums1[i + k / 2 - 1] : INT_MAX;
+	int midVal2 = (j + k / 2 - 1 < nums2.size()) ? nums2[j + k / 2 - 1] : INT_MAX;
+	if (midVal1 < midVal2)
+		return findKthNumber(nums1, i + k / 2, nums2, j, k - k / 2);
+	else
+		return findKthNumber(nums1, i, nums2, j + k / 2, k - k / 2);
+}
+class Solution {
+public:
+	double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+		int m = nums1.size(), n = nums2.size();
+		int left = (m + n + 1) / 2, right = (m + n + 2) / 2;
+		return  (findKthNumber(nums1, 0, nums2, 0, left) + findKthNumber(nums1, 0, nums2, 0, right)) / 2.0;
+	}
+};
+\end{lstlisting}
+\noindent
+\fbox{%
+  \parbox{0.3\textwidth}{
+\textbf{output}:\\
+Null
 }}
