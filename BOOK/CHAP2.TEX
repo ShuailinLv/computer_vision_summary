@@ -116,7 +116,7 @@ $$
 The first term is a normalization constant that ensures the distribution integrates to $1$.
 
 \begin{lstlisting}
-  import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
 import seaborn as sns
@@ -216,3 +216,430 @@ A common notation to succinctly represent probabilistic is as follows:
 \noindent
   \checkmark y \sim Bin(n=1,p=\theta)
 \end{align*}
+
+\subsection{Inference engines}
+There are several methods to compute the posterior even when it is not possible to solve it analytically. Some of the methods are:
+
+\noindent 1. Non-Markovian methods:\\
+\noindent \hspace{5mm} 1.1 Grid computing \\
+\noindent \hspace{5mm} 1.2 Quadratic approximation \\
+\noindent \hspace{5mm} 1.3 Variation methods \\
+ 
+ \noindent 2. Markovian methods:\\
+ \noindent \hspace{5mm} 2.1 Metropolis-Hastings \\
+ \noindent \hspace{5mm} 2.2 Hamiltonian Monte Carlo/No Y-Turn Sampler \\
+
+NOwadays, Bayesian analysis is performed maninly by using Markov Chain Monte Carlo (MCMC) methods, with variational methods gaining momentum for bigger datasets. We do not need to really understand these methods to perform Bayesian analysis, that's the whole point of probabilistic programming languages, but konwing at least how they work at a conceptual level is often vary useful.
+
+\subsubsection{Non-Markovian methods}
+Let's start our discussion of inference engines with the non-Markovian methods. These methods are in general faster than Markovian ones.
+
+\textbf{Grid computing}\\
+\noindent Grid computing is a brute-force approach. Even if you are not able to compute the whole posterior, you may be able to compute the prior and the likelihood for a given number of points. Let's assume we want to compute the posterior for a single parameter model. The grid approximation is as follows:
+
+1. Define a reasonable interval for the parameter (the prior should give you a hint).
+
+2. Place a grid of points (generally equidistant) on that interval.
+
+3. For each point in the grid we multiply the likelihood and the prior.
+
+Optionally, we may normalize the computed values (divide the result at each point by the sum of all points).
+
+It is easy to see that a larger number of points (or equivalently a reduced size of the grid) will result in a better approximation. In fact, if we take an infinite number of points we will get the exact posterior. The grid approach does not scale well for many parameters (also referred as dimensions); as you increase the number of parameters the volume of the posterior gets relatively smaller compared with the sampled volume. In other words, we will spend most of the time computing values with an almost null contribution to be posterior, making this approach unfeasible for many statistical and data problems.
+
+The following code implements the grid approach to solve the coin-flipping problem.
+
+\begin{lstlisting}
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import stats
+import seaborn as sns
+
+def posterior_grid_approx(grid_points=100, heads=6, tosses=9):
+    """
+    A grid implementation for the coin-flip problem
+    """
+    grid = np.linspace(0, 1, grid_points)
+    prior = np.repeat(5, grid_points)
+    likelihood = stats.binom.pmf(heads, tosses, grid)
+    unstd_posterior = likelihood * prior
+    posterior = unstd_posterior / unstd_posterior.sum()
+    return grid, posterior
+
+# Assuming we made 4 tosses and we observe only 1 head we have the following:
+
+points = 15
+h, n = 1, 4
+grid, posterior = posterior_grid_approx(points, h, n)
+plt.plot(grid, posterior, 'o-', label='heads = {}\ntosses = {}'.format(h, n))
+plt.xlabel(r'$\theta$')
+plt.legend(loc=0)
+plt.savefig('grid_approach.png')
+\end{lstlisting}
+\begin{align*}
+\noindent
+  \checkmark \theta \sim Beta(\alpha, \beta)\\
+\noindent
+  \checkmark y \sim Bin(n=1,p=\theta)
+\end{align*}
+\begin{figure}[htb]
+\center{\includegraphics[width=10cm]  {grid_approach.png}}
+\caption{\label{beta_distribution}  grid\_approach to solve the coin flipping}
+\end{figure}
+
+\textbf{Quadratic method}
+The quadratic approximation, also known as the Laplace method or the normal approximation, consists of approximating the posterior with a Gaussion distribution. This method often works because in general the region close to the mode of the posterior distribution is more or less normal, and in fact in many cases in actually a Gaussian distribution. This method consists of two steps. First, find the mode of the posterior distribution. This method consists of two steps. Fist, find the mode of the posterior distribution. This can be done using optimization methods; that is, methods to find the maximum or minimum of a function, and there are many off-the-shelf methods for this purpose. This will be the mean of the approximating Gaussion. Then we can estimate the curvature of the function near the mode. Based on this curvature, the standard deviation of the approximating Gaussian can be computer. We are going to apply this method once we have introduced PyMC3.
+
+\textbf{Variational methods}
+Most of modern Bayesian statics is done using Markovian methods (see the next section), but for some problems those methods can be too slow and they do not necessarily parallelize well. The naive approach is to simply run $n$ chains in parallel and then combine the results, but for many problems this is not a really good solution. Finding effective ways of parallelizing them is an active research area.
+
+Variational methods could be a better choice for large datasets (think big data) and/or for
+likelihoods that are too expensive to compute. In addition, these methods are useful for quick
+approximations to the posterior and as starting points for MCMC methods.
+
+The general idea of variational methods is to approximate the posterior with a simpler
+distribution; this may sound similar to the Laplace approximation, but the similarities vanish
+when we check the details of the method. The main drawback of variational methods is that we
+must come up with a specific algorithm for each model, so it is not really a universal
+inference engine, but a model-specific one.
+
+ 
+Of course, lots of people have tried to automatize variational methods. A recently proposed
+method is the automatic differentiation variational inference (ADVI) (see
+http://arxiv.org/abs/1603.00788). At the conceptual level, ADVI works in the following way:
+
+1. Transform the parameters to make them live in the real line. For example, taking the
+logarithm of a parameter restricted to positive values we obtain an unbounded parameter
+on the interval $[-\infty,\infty]$.
+
+2. Approximate the unbounded parameters with a Gaussian distribution. Notice that a
+Gaussian on the transformed parameter space is non-Gaussian on the original parameter
+space, hence this is not the same as the Laplace approximation.
+
+3. Use an optimization method to make the Gaussian approximation as close as possible to
+the posterior. This is done by maximizing a quantity known as the Evidence LowerBound (ELBO). How we measure the similarity of two distributions and what ELBO is exactly, at this point, is a mathematical detail.
+
+
+{Markovian methods}
+There is a family of related methods collectively know as MCMC methods. As with the grid
+computing approximation, we need to be able to compute the likelihood and prior for a given
+point and we want to approximate the whole posterior distribution. MCMC methods
+outperform the grid approximation because they are designed to spend more time in higher
+probability regions than in lower ones. In fact, a MCMC method will visit different regions of
+the parameter space in accordance with their relative probabilities. If region A is twice as
+likely as region B, then we are going to get twice the samples from A as from B. Hence, even
+if we are not capable of computing the whole posterior analytically, we could use MCMC
+methods to take samples from it, and the larger the sample size the better the results.
+
+What is in a name? Well, sometimes not much, sometimes a lot. To understand what MCMC
+methods are we are going to split the method into the two MC parts, the Monte Carlo part and
+the Markov Chain part.
+
+
+\textbf{Monte Carlo}
+The use of random numbers explains the Monte Carlo part of the name. Monte Carlo methods
+are a very broad family of algorithms that use random sampling to compute or simulate a
+given process. Monte Carlo is a very famous casino located in the Principality of Monaco.
+One of the developers of the Monte Carlo method, Stanislaw Ulam, had an uncle who used to
+gamble there. The key idea Stan had was that while many problems are difficult to solve or
+even formulate in an exact way, they can be effectively studied by taking samples from them,
+or by simulating them. In fact, as the story goes, the motivation was to answer questions about
+the probability of getting a particular hand in a solitary game. One way to solve this problem
+was to follow the analytical combinatorial problem. Another way, Stan argued, was to play
+several games of solitaire and just count how many of the hands we play match the particular
+hand we are interested in! Maybe this sounds obvious, or at least pretty reasonable; for
+example, you may have used re-sampling methods to solve your statistical problems. But
+remember this mental experiment was performed about 70 years ago, a time when the first
+practical computers began to be developed. The first application of the method was to solve a
+problem of nuclear physics, a problem really hard to tackle using the conventional tools at
+that time. Nowadays, even personal computers are powerful enough to solve many interesting
+problems using the Monte Carlo approach and hence these methods are applied to a wide
+variety of problems in science, engineering, industry, arts, and so on.
+
+A classic pedagogical example of using a Monte Carlo method to compute a quantity of
+interest is the numerical estimation of . In practice there are better methods for this
+particular computation, but its pedagocial value still remains. We can estimate the value of $\pi$
+with the following procedure:
+
+1. Throw $N$ points at random into a square of side $2R$.
+
+2. Draw a circle of radius $R$ inscribed in the square and count the number of points that are
+inside that circle.
+
+3. Estimate $\hat\pi$ as the ration $\frac{4\times inside}{N}$.
+
+A couple of notes: We know a point is inside a circle if the following relation is true: $\sqrt{(x^2+y^2)}\leq R$
+
+The area of the square is $(2R)^2$ and the area of the circle is $\pi R^2$. Thus we know that the ratio of the area of the square to be the area of the circle is $\frac{4}{\pi}$, and the area of the circle and square are proportional to the number of points inside the circle and the total $N$ points, respectively.
+
+Using a few line of Python we can run this simple Monte Carlo simulation and compute $\pi$ and also the relative error of our estimate compared to the  rule value of $\pi$:
+\begin{lstlisting}
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import stats
+import seaborn as sns
+
+N = 10000
+x,y = np.random.uniform(-1, 1, size=(2, N))
+inside = (x**2 + y**2) <= 1
+pi = inside.sum() * 4 / N
+error = abs((pi - np.pi) / pi ) * 100
+
+outside = np.invert(inside)
+
+plt.plot(x[inside], y[inside], 'b.')
+plt.plot(x[outside], y[outside], 'r.')
+plt.plot(0, 0, label='$\hat \pi$ = {:4.3f}\nerror = {:4.3f}'.format(pi, error), alpha=0)
+plt.axis('square')
+plt.legend(frameon=True, framealpha=0.9, fontsize=16)
+
+plt.savefig('monte_carlo.png')
+\end{lstlisting} 
+\begin{figure}[htb]
+\center{\includegraphics[width=10cm]  {monte_carlo.png}}
+\caption{\label{beta_distribution}  monte\_carlo}
+\end{figure}
+In the preceding code we can see that the outside variable is only used to get the plot; we do not need it for computing $\frac{4\times inside}{N}$. Another clarification: because our computation is restricted to  the unit circle we can omit computing the square root from the computation of the inside variable.
+
+\textbf{Markov chain}
+A Markov chain is a mathematical object consisting of a sequence of states and a set of
+probabilities describing the transitions among those states. A chain is Markovian if the
+probability of moving to other states depends only on the current state. Given such a chain, we
+can perform a random walk by choosing a starting point and moving to other states following
+the transition probabilities. If we somehow find a Markov chain with transitions proportional
+to the distribution we want to sample from (the posterior distribution in Bayesian analysis),
+sampling becomes just a matter of moving between states in this chain. So, how do we find
+this chain if we do not know the posterior in the first place? Well, there is something known
+as \textbf{detailed balance condition}. Intuitively, this condition says that we should move in a
+reversible way (a reversible process is a common approximation in physics). That is, the
+probability of being in state i and moving to state j should be the same as the probability of
+being in state j and moving towards state $i$. 
+
+In summary, all this means that if we manage to create a Markov Chain satisfying detailed
+balance we can sample from that chain with the guarantee that we will get samples from the
+correct distribution. This is a truly remarkable result! The most popular method that
+guarantees detailed balance is the \textbf{Metropolis-Hasting algorithm}.
+
+\textbf{Metropolis-Hastings}
+To conceptually understand this method, we are going to use the following analogy. Suppose
+we are interested in finding the volume of water a lake contains and which part of the lake has
+the deepest point. The water is really muddy so we can't estimate the depth just by looking to
+the bottom, and the lake is really big, so a grid approximation does not seem like a very good
+idea. In order to develop a sampling strategy, we seek help from two of our best friends,
+Markovia and Monty. After some discussion they come up with the following algorithm that
+requires a boat; nothing fancy, we can even use a wooden raft, and a very long stick. This is
+cheaper than a sonar and we have already spent all our money on the boat, anyway!
+
+1. Initialize the measuring by choosing a random place in the lake and move the boat there.\\
+2. Use the stick to measure the depth of the lake.\\
+3. Move the boat to some other point and take a new measurement.\\
+4. Compare the two measures in the following way:\\
+\hspace{5mm}4.1. If the new spot is deeper than the old one, write down in your notebook the depth of
+the new spot and repeat from 2.\\
+\hspace{5mm}4.2 If the spot is shallower than the old one, we have two options: to accept or reject.
+Accepting means to write down the depth of the new spot and repeat from 2.
+Rejecting means to go back to the old spot and write down (again) the value for the
+depth of the old spot.
+
+
+How do we decide to accept or reject a new spot? Well, the trick is to apply the Metropolis-Hastings criteria. This means to accept the new spot with a probability that is proportional to
+the ratio of the depth of the new and old spots.
+
+If we follow this iterative procedure, we will get not only the total volume of the lake and the
+deepest point, but we will also get an approximation of the entire curvature of the bottom of the lake. As you may have already guessed, in this analogy the curvature of the bottom of the
+lake is the posterior distribution and the deepest point is the mode. According to our friend
+Markovia, the larger the number of iterations the better the approximation.
+
+Indeed, theory guarantees that under certain general circumstances, we are going to get the
+exact answer if we get an infinite number of samples. Luckily for us, in practice and for many,
+many problems, we can get a very accurate approximation using a relatively small number of
+samples.
+
+Let's look at the method now in a little bit more formal way. For some distributions, like the
+Gaussian, we have very efficient algorithms to get samples from, but for some other
+distributions such as many of the posterior distributions, we are going to find this is not the
+case. Metropolis-Hastings enables us to obtain samples from any distribution with probability
+$p(x)$ given that we can compute at least a value proportional to it. This is very useful since in a
+lot of problems like Bayesian statistics the hard part is to compute the normalization factor,
+the denominator of the Bayes' theorem. The Metropolis-Hastings algorithm has the following
+steps:
+
+{\color{blue}{
+\noindent 1. Choose an initial value for our parameter $x_i$. This can be done randomly or by using
+some educated guess.
+
+
+\noindent 2. We choose a new parameter value $x_{i+1}$, sampling from an easy-to-sample distribution
+such as a Gaussian or uniform distribution $Q(x_{i+1}|x_i)$. We can think of this step as 
+perturbing the state $x_i$ somehow.
+
+
+\noindent 3. We compute the probability of accepting a new parameter value by using the Metropolis-Hastings criteria
+$p_{\alpha}(x_{i+1}|x_i) = \min\left( 1, \frac{p(x_{i+1})q(x_i|x_{i+1})}{p(x_i)q(x_{i+1}|x_i)}\right)$.
+
+\noindent 4. If the probability computed on $3$ is larger than the value taken from a uniform
+distribution on the interval $[0, 1]$ we accept the new state, otherwise we stay in the old
+state.
+
+\noindent 5. We iterate from $2$ until we have enough samples. Later we will see what enough means.
+}}
+
+A couple of things to take into account:
+
+1. If the proposal distribution $Q(x_{i+1} | x_i)$ is symmetric we get $p_{\alpha}(x_{i+1}|x_i) = \min\left(1, \frac{p(x_{i+1})}{p(x_i)} \right)$, often referred to as \textbf{Metropolis criteria} (we drop the \textbf{Hastings} apart).
+
+2. Steps $3$ and $4$ imply that we will always accept or move to a most probable state, to a
+most probable parameter value. Less probable parameter values are accepted probabilistically given the ratio between the probability of the new parameter value $x_{i+1}$ and the old parameter value $x_i$. This criteria for accepting steps gives us a more efficient
+sampling approach compared to the grid approximation, while ensuring a correct
+sampling.
+
+3. The target distribution (the posterior distribution in Bayesian statistics) is approximated
+by saving the sampled (or visited) parameter values. We save a sampled value $x_{i+1}$ if we
+accept moving to a new state $x_{i+1}$. If we reject moving to $x_{i+1}$, we save the value of $x_i$.
+
+
+At the end of the process we will have a list of values sometimes refereed to as a \textbf{sample chain
+or trace}. If everything was done the right way these samples will be an approximation of the
+posterior. The most frequent values in our trace will be the most probable values according to
+the posterior. An advantage of this procedure is that analyzing the posterior is simple. We
+have effectively transformed integrals (of the posterior) into just summing values in our
+vector of sampled values.
+The following code illustrates a very basic implementation of the Metropolis algorithm. Is
+not meant to solve any real problem, only to show it is possible to sample from a function if
+we know how to compute its value at a given point. Notice also that the following
+implementation has nothing Bayesian in it; there is no prior and we do not even have data!
+Remember that the MCMC methods are very general algorithms that can be applied to a broad
+array of problems. For example, in a (non-Bayesian) molecular model, instead of
+func.pdf(x) we would have a function computing the energy of the system for the state $x$.
+
+
+The first argument of the metropolis function is a SciPy distribution; we are assuming we do
+not know how to directly get samples from this distribution.
+\begin{lstlisting}
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import stats
+import seaborn as sns
+
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import stats
+import seaborn as sns
+
+def metropolis(func, steps=10000):
+    """
+    A very simple Metropolis implementation.
+    """
+    samples = np.zeros(steps)
+    old_x = func.mean()
+    old_prob = func.pdf(old_x)
+
+    for i in range(steps):
+        new_x = old_x + np.random.normal(0, 0.5)
+        new_prob = func.pdf(new_x)
+        acceptance = new_prob / old_prob
+        if acceptance >= np.random.random():
+            samples[i] = new_x
+            old_x = new_x
+            old_prob = new_prob
+        else:
+            samples[i] = old_x
+    return samples
+
+"""
+In the next example we have defined func as a beta function, 
+simply because is easy to change their parameters and get 
+different shapes. We are plotting the samples obtained by 
+metropolisas a histogram and also the True distribution as 
+a red line:
+"""
+
+func = stats.beta(0.4, 2)
+samples = metropolis(func=func)
+x = np.linspace(0.01, .99, 100)
+y = func.pdf(x)
+plt.xlim(0, 1)
+plt.plot(x, y, 'r-', lw=3, label='True distribution')
+plt.hist(samples, bins=30, normed=True, label='Estimated distribution')
+plt.xlabel('$x$', fontsize=14)
+plt.ylabel('$pdf(x)$', fontsize=14)
+plt.legend(fontsize=14)
+plt.savefig('metropolis_algorithm.png')
+\end{lstlisting}
+\begin{figure}[htb]
+\center{\includegraphics[width=10cm]  {metropolis_algorithm.png}}
+\caption{\label{beta_distribution}  metropolis\_algorithm}
+\end{figure}
+
+
+\textbf{Hamiltonian Monte Carlo/NUTS}
+MCMC methods, including Metropolis-Hastings, come with the theoretical guarantee that if
+we take enough samples we will get an accurate approximation of the correct distribution.
+However, in practice it could take more time than we have to get enough samples. For that
+reason, alternatives to the general Metropolis-Hastings algorithm have been proposed. Many
+of those alternative methods such as the Metropolis-Hastings algorithm itself, were developed
+originally to solve problems in statistical mechanics, a branch of physics that studies
+properties of atomic and molecular systems. One such modification is known as \textbf{Hamiltonian
+Monte Carlo or Hybrid Monte Carlo (HMC)}. In simple terms a Hamiltonian is a description
+of the total energy of a physical system. The name Hybrid is also used because is was
+originally conceived as a hybridization of molecular mechanics, a widely used simulation
+technique for molecular systems, and Metropolis-Hastings. The HMC method is essentially
+the same as Metropolis-Hastings except that instead of proposing random displacements of
+our boat we do something more clever instead; we move the boat following the curvature of
+the lake's bottom. Why is this clever? Because in doing so we try to avoid one of the main
+problems of Metropolis-Hastings: the exploration is slow and samples tend to be
+autocorrelated, since most of the proposed moves are rejected.
+
+
+So, how can we try to understand this method without going into mathematical details?
+Imagine we are in the lake with our boat. In order to decide where to move next we let a ball
+roll at the bottom of the lake, starting from our current position. Remember that this method
+was brought to us by the same people that treat horses as spheres, so our our ball is not only
+perfectly spherical, it also has no friction and thus is not slowed down by the water or mud.
+Well, we throw a ball and we let it roll for a short moment, and then we move the boat to
+where the ball is. Now we accept or reject this step using the Metropolis criteria just as we saw
+with the Metropolis-Hastings method. The whole procedure is repeated a number of times.
+This modified procedure has a higher chance of accepting new positions, even if they are far
+away relative to the previous position.
+
+Out of our Gedanken experiment and back to the real world, the price we pay for this much
+cleverer Hamiltonian-based proposal is that we need to compute gradients of our function. A
+gradient is just a generalization of the concept of derivative to more than one dimension. We
+can use gradient information to simulate the ball moving in a curved space. So, we are faced
+with a trade-off; each HMC step is more expensive to compute than a Metropolis-Hastings
+one but the probability of accepting that step is much higher with HMC than with Metropolis.
+For many problems, this compromise turns in favor of the HMC method, especially for
+complex ones. Another drawback with HMC methods is that to have really good sampling we
+need to specify a couple of parameters. When done by hand it takes some trial and error and
+also requires experience from the user, making this procedure a less universal inference
+engine than we may want. Luckily for us, PyMC3 comes with a relatively new method known
+as \textbf{No-U-Turn Sampler (NUTS)}. This method has proven very useful in providing the
+sampling efficiency of HMC methods, but without the need to manually adjust any knob.
+
+\textbf{Other MCMC methods}
+There are plenty of MCMC methods out there and indeed people keep proposing newmethods, so if you think you can improve sampling methods there is a wide range of persons
+that will be interested in your ideas. Mentioning all of them and their advantages and
+drawbacks is completely out of the scope of this book. Nevertheless, there are a few worth
+mentioning because you may hear people talk about them, so it is nice to at least have an idea
+of what are they talking about.
+
+Another sampler that has been used extensively for molecular systems simulations is the
+\textbf{Replica Exchange} method, also known as \textbf{parallel tempering} or \textbf{Metropolis Coupled
+MCMC} (or MC3; maybe that's too many MCs). The basic idea of this method is to simulate
+different replicas in parallel. Each replica follows the Metropolis-Hastings algorithm. The
+only difference between replicas is that the value of a parameter called temperature (physics
+influence once more time!) controls the probability of accepting less probable positions.
+From time to time, the method attempts a swap between replicas. The swapping is also
+accepted/rejected according to the Metropolis-Hastings criteria, but this time taking into
+account both replicas' temperatures. The swapping between chains can be attempted between
+random chains but it is generally preferable to do it for neighboring replicas; that is, replicas
+with similar temperatures and hence a higher probability-of-acceptance ratio. The intuition
+for this method is that as we increase the temperature the probability of accepting the new
+proposed position increases, and decreases with lower and lower temperatures. Replicas at
+higher temperatures explore the system more freely; for these replicas the surface becomes
+effectively flatter and thus easier to explore. For a replica with infinite temperature, all states
+are equally likely. The exchange between replicas avoids replicas at low temperatures getting
+trapped in local minima. This method is well suited for exploring systems with multiple
+minima.
+
+\subsection{PyMC3 instroduction}
